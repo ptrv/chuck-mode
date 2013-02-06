@@ -234,6 +234,7 @@ upchuck operator."
    (mapconcat 'identity symbol-list "\\|")
    "\\)\\>"))
 
+(defvar font-lock-operator-face 'font-lock-variable-name-face)
 ;; Syntax highlighting
 (defconst chuck-font-lock-keywords-1
   (list
@@ -289,7 +290,7 @@ upchuck operator."
       "day" "week"
       ;; Special: global ugens
       "dac" "adc" "blackhole")
-     'font-lock-pseudo-keyword-face)
+     'font-lock-keyword-face)
 
    ;; chuck operators and debug print
    (cons (symbol-regexp "=>" "=<" "!=>" "->"
@@ -339,7 +340,7 @@ upchuck operator."
    '("\\<\\(Math\\|Std\\|Machine\\)\\>\\." 1 'font-lock-constant-face)
    ;; Functions
    '("\\<\\(fun\\|function\\)[ \t]+[a-zA-Z_]+[a-zA-Z0-9_]*[ \t]+\\([a-zA-Z_]+[a-zA-Z0-9_]*\\)"
-     2 'font-lock-function-name))
+     2 'font-lock-function-name-face))
   ;; '("\\('\\w*'\\)" . font-lock-variable-name-face))
   "Highlighting for ChucK mode")
 
