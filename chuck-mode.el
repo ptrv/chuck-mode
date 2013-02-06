@@ -1,5 +1,4 @@
-;;; -*- coding: utf-8 -*-
-;;;chuck-mode.el --- ChucK major mode
+;;; chuck-mode.el --- ChucK major mode --- coding: utf-8 --
 
 ;; Copyright (C) 2004 Mikael Johansson
 
@@ -32,7 +31,7 @@
 
 ;;; Commentary:
 
-;; This is a mode for editing ChucK language files. It also supports
+;; This is a mode for editing ChucK language files.  It also supports
 ;; running a ChucK subprocess and sending code to it.
 
 ;; Information about the ChucK language can be found on
@@ -62,7 +61,7 @@
 
 (defcustom chuck-exec "chuck"
   "*Command used to start the ChucK VM.
-The default will work if `chuck' is on your path. If you don't
+The default will work if `chuck' is on your path.  If you don't
 want or can't change you `PATH' env variable change this to point
 to the full path of `chuck' (i.e `c:\\chuck\\bin\\chuck.exe')"
   :type 'string
@@ -77,7 +76,7 @@ to the full path of `chuck' (i.e `c:\\chuck\\bin\\chuck.exe')"
 (defvar chuck-mode-hook nil)
 
 (defun chuck-cmd (cmd &optional arg)
-  "Sends a command to chuck"
+  "Send a command CMD with ARG to chuck."
   (shell-command (concat chuck-exec
                          " " cmd  " "
                          (or arg ""))))
@@ -90,16 +89,17 @@ to the full path of `chuck' (i.e `c:\\chuck\\bin\\chuck.exe')"
   "You need to save the buffer before sending it.")
 
 (defun run-chuck ()
-  "Start the ChucK VM as an inferior process"
+  "Start the ChucK VM as an inferior process."
   (interactive)
   (start-process "ChucK" "*ChucK*" chuck-exec "--loop"))
 
 (defun kill-chuck ()
-  "Kills the ChucK VM"
+  "Kill the ChucK VM."
   (interactive)
   (chuck-cmd "--kill"))
 
 (defun chuck-read-buffer ()
+  "Read buffer."
   (if (and (buffer-modified-p) (not chuck-auto-save-buffer))
       (error chuck-save-error)
     (let ((buffer (read-buffer "Buffer to send: "
@@ -109,7 +109,7 @@ to the full path of `chuck' (i.e `c:\\chuck\\bin\\chuck.exe')"
         (current-buffer)))))
 
 (defun chuck-add-code (buffer)
-  "Add a buffer as a shred to the ChucK VM"
+  "Add a BUFFER as a shred to the ChucK VM."
   (interactive (list (chuck-read-buffer)))
   (with-current-buffer buffer
     (when (not (get-process "ChucK"))
@@ -118,12 +118,12 @@ to the full path of `chuck' (i.e `c:\\chuck\\bin\\chuck.exe')"
       (chuck-cmd "+" chuck-file))))
 
 (defun chuck-remove-code (shred)
-  "Remove a shred from ChucK"
+  "Remove a SHRED from ChucK."
   (interactive "nWhich shred? ")
   (chuck-cmd "-" (number-to-string shred)))
 
 (defun chuck-replace-code (buffer shred)
-  "Replace a shred with the code on a buffer"
+  "Replace a SHRED with the code on a BUFFER."
   (interactive (list (chuck-read-buffer)
              (read-number "Wich shred? ")))
   (with-current-buffer buffer
@@ -132,7 +132,7 @@ to the full path of `chuck' (i.e `c:\\chuck\\bin\\chuck.exe')"
       (chuck-cmd "=" (concat str-shred " " chuck-file)))))
 
 (defun chuck-status ()
-  "Tell ChucK to report status"
+  "Tell ChucK to report status."
   (interactive)
   (chuck-cmd "--status"))
 
@@ -141,9 +141,9 @@ to the full path of `chuck' (i.e `c:\\chuck\\bin\\chuck.exe')"
 ;; **************************************************
 
 (defun chuck-electric-equal-key (arg)
-  "Smart behaviour for = key. Inserts a chuck operator if pressed
-once and an == if pressed twice. With the C-u prefix inserts the
-upchuck operator."
+  "Smart behaviour for = key.
+Inserts a chuck operator if pressed once and an == if pressed
+twice. With the C-u prefix inserts the upchuck operator."
   (interactive "P")
   (cond ((memq (char-before) '(?> ?< ?!))
          (insert "="))
@@ -154,7 +154,7 @@ upchuck operator."
         (t (insert "=>"))))
 
 (defun chuck-electric-close-block (n)
-  "Automatically indent after typing a }"
+  "Automatically indent after typing a }."
    (interactive "p")
    (self-insert-command n)
    (indent-according-to-mode)
@@ -212,23 +212,26 @@ upchuck operator."
       '("Run ChucK VM on a inferior process." . run-chuck))
 
     chuck-mode-map)
-  "Keymap for ChucK major mode")
+  "Keymap for ChucK major mode.")
 
 ;; Filename binding
 (add-to-list 'auto-mode-alist '("\\.ck\\'" . chuck-mode))
 
 ;; Come helper functions for creating font-lock entries.
 (defun keyword-regexp (&rest word-list)
+  "Regexp for WORD-LIST keywords."
   (concat
    "\\<\\("
    (mapconcat 'identity word-list "\\|")
    "\\)\\>"))
 (defun symbol-regexp (&rest symbol-list)
+  "Regexp for SYMBOL-LIST symbols."
   (concat
    "\\_<\\("
    (mapconcat 'identity symbol-list "\\|")
    "\\)\\_>"))
 (defun chuck-library-regexp (namespace &rest symbol-list)
+  "Regexp for NAMESPACE and SYMBOL-LIST."
   (concat
    "\\<" namespace "\\.\\("
    (mapconcat 'identity symbol-list "\\|")
@@ -342,14 +345,14 @@ upchuck operator."
    '("\\<\\(fun\\|function\\)[ \t]+[a-zA-Z_]+[a-zA-Z0-9_]*[ \t]+\\([a-zA-Z_]+[a-zA-Z0-9_]*\\)"
      2 'font-lock-function-name-face))
   ;; '("\\('\\w*'\\)" . font-lock-variable-name-face))
-  "Highlighting for ChucK mode")
+  "Highlighting for ChucK mode.")
 
 (defvar chuck-font-lock-keywords chuck-font-lock-keywords-1
-  "Default highlighting for ChucK mode")
+  "Default highlighting for ChucK mode.")
 
 ;; Indenting for ChucK mode
 (defun chuck-indent-line ()
-  "Indent current line as ChucK code"
+  "Indent current line as ChucK code."
   (interactive)
   (beginning-of-line)
   (if (bobp)  ;; Start of buffer starts out unindented
@@ -360,20 +363,23 @@ upchuck operator."
           (progn
             (save-excursion
               (forward-line -1)
-              (setq cur-indent (- (current-indentation) default-tab-width)))
+              ;; (setq cur-indent (- (current-indentation) default-tab-width)))
+              (setq cur-indent (- (current-indentation) tab-width)))
             (if (< cur-indent 0)
                 (setq cur-indent 0)))
         (save-excursion
           (while not-indented
             (forward-line -1)
             (cond ((looking-at ".*{") ; In open block
-                   (setq cur-indent (+ (current-indentation) default-tab-width))
+                   ;;(setq cur-indent (+ (current-indentation) default-tab-width))
+                   (setq cur-indent (+ (current-indentation) tab-width))
                    (setq not-indented nil))
                   ((looking-at "[[:blank:]]*}") ; Closed block on blank line
                    (setq cur-indent (current-indentation))
                    (setq not-indented nil))
                   ((looking-at ".*}") ; Closed block on non-blank line
-                   (setq cur-indent (- (current-indentation) default-tab-width))
+                   ;;(setq cur-indent (- (current-indentation) default-tab-width))
+                   (setq cur-indent (- (current-indentation) tab-width))
                    (setq not-indented nil))
                   ((bobp)
                    (setq not-indented nil))))))
@@ -382,7 +388,7 @@ upchuck operator."
         (indent-line-to 0)))))
 
 ;; Syntax table
-(defvar chuck-mode-syntax-table nil "Syntax table for ChucK mode")
+(defvar chuck-mode-syntax-table nil "Syntax table for ChucK mode.")
 (setq chuck-mode-syntax-table
       (let ((chuck-mode-syntax-table (make-syntax-table)))
     (modify-syntax-entry ?_ "_" chuck-mode-syntax-table)
@@ -392,7 +398,7 @@ upchuck operator."
 
 ;; Entry point
 (defun chuck-mode ()
-  "Major mode for editing ChucK music/audio scripts"
+  "Major mode for editing ChucK music/audio scripts."
       (interactive)
   (kill-all-local-variables)
   (set-syntax-table chuck-mode-syntax-table)
@@ -405,7 +411,7 @@ upchuck operator."
 
   (setq major-mode 'chuck-mode)
   (setq mode-name "ChucK")
-  (setq default-tab-width 4)
+  (setq tab-width 4)
   (run-hooks 'chuck-mode-hook))
 
 (provide 'chuck-mode)
