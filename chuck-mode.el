@@ -392,8 +392,9 @@ twice. With the C-u prefix inserts the upchuck operator."
 (setq chuck-mode-syntax-table
       (let ((chuck-mode-syntax-table (make-syntax-table)))
     (modify-syntax-entry ?_ "_" chuck-mode-syntax-table)
-    (modify-syntax-entry ?/ ". 12" chuck-mode-syntax-table)
-    (modify-syntax-entry ?\n ">" chuck-mode-syntax-table)
+    (modify-syntax-entry ?/ ". 124b" chuck-mode-syntax-table)
+    (modify-syntax-entry ?* ". 23" chuck-mode-syntax-table)
+    (modify-syntax-entry ?\n "> b" chuck-mode-syntax-table)
     chuck-mode-syntax-table))
 
 ;; Entry point
